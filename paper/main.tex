@@ -1,0 +1,478 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\ttdefault}{txtt}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\hypersetup{pdftitle={Permutations Are Not Enough: Sign Flips Explain the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks},pdfauthor={Mrigesh Lakhanpal},pdfkeywords={linear mode connectivity, permutation symmetry, sign flips, sigmoid networks, loss landscape}}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{enumitem}
+\setlist{itemsep=2pt,topsep=4pt}
+\captionsetup{font=small,labelfont=bf}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\pagestyle{empty}
+\newcommand{\md}[1]{\textsf{#1}}
+\newcommand{\eps}{\varepsilon}
+
+\title{\textbf{Permutations Are Not Enough: Sign Flips Explain the\\ Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks}}
+\author{Mrigesh Lakhanpal\\
+\small \texttt{mrigeshlakhanpal4@gmail.com}\\
+\small ORCID: \href{https://orcid.org/0009-0007-9539-9091}{0009-0007-9539-9091}}
+\date{October 2026 \quad (preprint, v1)\\[2pt] \footnotesize This work is licensed under a Creative Commons Attribution 4.0 International license (CC BY 4.0).}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+\noindent
+Why permutation alignment fails to linearly connect narrow networks remains, to my knowledge, an open question. Ainsworth et al.\ raised the possibility that either their matching methods fall short on thin models or ``some form of invariance other than permutation symmetries'' is at play, and Benzing et al.\ noted that settling the narrow case would require an exhaustive search, which they considered infeasible. One-hidden-layer sigmoid networks make that search possible, because for irreducible networks the complete group of exact symmetries is known and finite: permutations of hidden units combined with sign flips, $2^h h!$ elements at width $h$. I trained 40 such networks per width (2 to 64) on a two-dimensional classification task and measured the training-error barrier along the straight line between independently trained pairs. At width~3, the smallest width that solved the task, all 11 pairs learned the same three decision lines, yet permutation matching left a median barrier of 17.95 points of training error; adding sign flips removed it (median 0.00). A follow-up exhaustive search over all 48 symmetries, chosen by the full barrier, left at most 0.11 points in every pair, and all networks involved were irreducible, so the search was complete. For these networks, the evidence therefore points to ``another symmetry'': the sign flip. I also prove that a single spare neuron joins a network to all of its $2^r r!$ symmetry copies by a path along which the function is exactly constant. The study is deliberately small and limited to one architecture and one task, but its main questions were fixed before training, and one command rebuilds every result, reproducing the main result files byte for byte.
+\par\medskip\noindent\textbf{Keywords:} linear mode connectivity; permutation symmetry; sign-flip symmetry; sigmoid networks; loss landscape; model merging
+\end{abstract}
+
+\section{Introduction}
+
+Two networks trained from different random initializations usually reach similar accuracy, yet the straight line between their weights typically passes through a region of high loss. Entezari et al.~\cite{entezari2022role} conjectured that most of this barrier is an artifact of permutation symmetry: reorder the hidden units of one network appropriately, and SGD solutions become linearly mode connected~\cite{frankle2020linear}. Ainsworth et al.~\cite{ainsworth2023git} gave strong evidence for wide networks, reaching zero-barrier connections between independently trained ResNets once they were wide enough. In narrow networks, however, permutation alignment does not remove the barrier, and, as far as I am aware, the reason has not yet been settled. Ainsworth et al.\ write that their result ``suggests that either our permutation selection methods are failing to find satisfactory permutations on thinner models or that some form of invariance other than permutation symmetries must be at play in the thin model regime''~\cite[Section~5.3]{ainsworth2023git}, and they conjecture that permutation symmetries are ``a necessary piece, though not a complete picture''~\cite[Section~7]{ainsworth2023git}. Benzing et al.\ observe the same failure in narrow fully connected networks and add that ``a thorough falsification of the hypothesis in narrower networks would require an exhaustive (and therefore infeasible) search over the space of permutations''~\cite[Section~3.1]{benzing2022random}. Entezari et al.\ note that small networks lie outside the scope of their conjecture~\cite[Section~3.4]{entezari2022role}.
+
+In general this question is difficult to settle, because the complete symmetry group of a network is either unknown or too large to search. One-hidden-layer sigmoid networks are an exception. For irreducible networks of this kind, the only exact symmetries are permutations of the hidden units and sign flips of individual units, which follow from $\sigma(-z) = 1 - \sigma(z)$~\cite{sussmann1992uniqueness,vlacic2020affine}. The group has $2^h h!$ elements, only 48 at width $h=3$, so ``matching failed'' and ``another symmetry is involved'' can be told apart by trying every element.
+
+I used this to study independently trained networks on a two-dimensional task whose decision region is a triangle, so that the smallest working network has three hidden units and every learned feature is a line that can be drawn. My contributions are:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Sign flips, not matching failure, explain the barrier at minimal width} (pre-registered; Section~\ref{sec:flips}). At width~3, permutation matching leaves a median training-error barrier of 17.95 points, while matching with sign flips removes it (median 0.00). The best alignment with flips lowered the barrier by more than 0.5 points in 10 of 11 pairs at width~3, and in 16 of 20 at widths 4 and~6.
+\item \textbf{An exhaustive search over the complete exact symmetry group removes the barrier} (post-hoc, rules dated before the search; Section~\ref{sec:b1}). Searching all 48 permutation-and-flip combinations at width~3 and choosing by the full barrier leaves at most 0.11 points in all 11 pairs. Every width-3 network involved is irreducible, so by Sussmann's theorem this search covers every exact symmetry.
+\item \textbf{One spare neuron connects all symmetry copies} (proof; Section~\ref{sec:spare}). Adding one hidden unit with zero output weight, a network is joined to each of its $2^r r!$ permutation and sign-flip copies by a piecewise-linear path of at most $10r-6$ segments along which the network function is exactly constant for every input. The sign-flip move is, to my knowledge, new.
+\end{enumerate}
+
+\noindent The hypotheses and main questions were fixed before any network was trained, every decision taken after seeing results is labelled as such, and one command, including tests, rebuilds every result in about 87 minutes on a laptop CPU, reproducing the main result files byte for byte (Section~\ref{sec:repro}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.82\linewidth]{figures/fig2_barrier_ci.png}
+\caption{Training-error barrier against hidden width: median over independent pairs, with 95\% bootstrap intervals (10{,}000 resamples of pairs). \md{none}: no alignment. \md{wm}: weight matching over permutations. \md{wm\_sign}: weight matching over permutations and sign flips. \md{bf\_sign}: brute force over all permutations and flips (widths 3--6), chosen by midpoint loss. Dashed line: $\eps = 0.5$ points. Width~3: 11 pairs; widths 4--64: 20 pairs; no width-2 network met the inclusion rule.}
+\label{fig:barrier}
+\end{figure}
+
+\section{Background and related work}
+\label{sec:background}
+
+\paragraph{Barriers.} For networks with parameters $\theta_A, \theta_B$ and a loss or error $L$, the barrier along the straight line is~\cite[Eq.~1]{entezari2022role}
+\begin{equation}
+B(\theta_A, \theta_B) = \sup_{\alpha \in [0,1]} \Big[ L\big(\alpha\theta_A + (1-\alpha)\theta_B\big) - \big(\alpha L(\theta_A) + (1-\alpha) L(\theta_B)\big) \Big].
+\label{eq:barrier}
+\end{equation}
+Entezari et al.\ report it at $\alpha = 1/2$ as a surrogate for the supremum~\cite[footnote~3]{entezari2022role}. I evaluate it on a grid of 25 values of $\alpha$ and use the training \emph{error} as $L$ for all verdicts (Section~\ref{sec:setup}).
+
+\paragraph{Symmetries of one-hidden-layer sigmoid networks.} Write the network as
+\begin{equation}
+f(x) = \sum_{i=1}^{h} s_i\, \sigma(w_i^\top x + b_i) + c, \qquad \sigma(z) = \frac{1}{1+e^{-z}},
+\label{eq:net}
+\end{equation}
+with input weights $w_i$, biases $b_i$, output weights $s_i$ and output bias $c$. Permuting the units leaves $f$ unchanged~\cite{hechtnielsen1990algebraic}. Because $\sigma(-z) = 1-\sigma(z)$, so does a \emph{sign flip} of unit $i$:
+\begin{equation}
+(w_i, b_i, s_i, c) \;\mapsto\; (-w_i, -b_i, -s_i, c + s_i), \qquad\text{since}\qquad -s_i\sigma(-z) + c + s_i = s_i\sigma(z) + c .
+\label{eq:flip}
+\end{equation}
+Sussmann proved that for irreducible one-hidden-layer $\tanh$ networks these are the only symmetries~\cite{sussmann1992uniqueness}; Vla\v{c}i\'c and B\"olcskei restate his result as Lemma~2 of~\cite{vlacic2020affine}. Since $\sigma(z) = \tfrac12\big(1+\tanh(z/2)\big)$, a sigmoid network with an output bias is a $\tanh$ network with rescaled weights, so the same holds for Eq.~\eqref{eq:net}. A network is irreducible when no output weight is zero and no two units have equal or opposite input parameters $(w_i, b_i)$~\cite[Lemma~1]{vlacic2020affine}; in practice I also flag units that are nearly constant on the data. Two limits matter here. First, uniqueness holds for the function on all of $\mathbb{R}^2$; on a finite data set, the set of equivalent networks can only be larger~\cite[Section~I-A]{vlacic2020affine}. Bürgin et al.~\cite{burgin2026beyond} study exactly such approximate, data-dependent symmetries and their effect on linear mode connectivity. Second, if a network is \emph{nearly} reducible, for example because two units almost coincide, it has continuous near-symmetries that no finite search covers.
+
+\paragraph{Related work.} Entezari et al.\ ran a brute-force permutation search on small ReLU networks trained on MNIST~\cite[Appendix~E.3]{entezari2022role}, and Ainsworth et al.\ exhaustively searched the permutations of a hand-built two-hidden-layer ReLU network on a two-dimensional task to show that some solutions admit no linearly connecting permutation~\cite[Appendix~A.6]{ainsworth2023git}. ReLU networks have no sign-flip symmetry, so flips do not arise in either setting. Boufalis et al.~\cite[Appendix~A, Proposition~1]{boufalis2025symmetry} extended weight matching to sign flips for sine and $\tanh$ networks, essentially the \md{wm\_sign} mode used here. They evaluated it on networks constructed to be equivalent (transformed copies of one network with small perturbations), and helpfully note that it can sometimes flip signs unnecessarily; their experiments on independently trained CNNs, whose focus was a different method, used permutation-only matching. Building on their work, I apply the sign-aware method to independently trained networks and compare it with an exhaustive search. Şimşek et al.~\cite{simsek2021geometry} showed that at minimal width the global minima are isolated permutation copies, and that one extra neuron connects them through straight segments (their Theorem~3.1 and Corollary~4.1); for sigmoid, they remark that ``the analysis must include additional invariances'' (Remark~4.1). Section~\ref{sec:spare} builds on their construction by adding a sign-flip move. Zhan et al.~\cite{zhan2025analyzing} analyze a two-layer ReLU teacher--student model with fixed output weights, no biases and a population loss; from their characterization of the global minima (Lemma~2, from~\cite{lin2024exploring}) they note that when student and teacher widths are equal, any two minima coincide up to permutation, so the permuted barrier is zero. My width-3 result can be seen as an empirical sigmoid analogue, in which the coincidence holds only up to permutations \emph{and} sign flips. Zhao et al.~\cite{zhao2025understanding} relate the connected components of the set of minima to the topology of the symmetry group, build constant-loss curves from continuous symmetries (their Section~6.1), and note that characterizing the minima of nonlinear networks ``requires identifying the complete set of symmetries'' (Section~7). For irreducible one-hidden-layer sigmoid networks that complete set of exact symmetries is known, and this study searches all of it. Ito et al.~\cite{ito2026permutations} show that very wide image networks become linearly connected without any permutation after temperature calibration; I return to their work in Section~\ref{sec:pitfalls}.
+
+\section{Setup and pre-registration}
+\label{sec:setup}
+
+\paragraph{Task and data.} The task is the ``coffee roasting'' problem from the Machine Learning Specialization~\cite{ng2022mls}: two features (temperature 150--285\,$^\circ$C, duration 11.5--15.5\,min), and a roast is good inside a triangle bounded by $t > 175$, $d > 12$ and $d \le -\tfrac{3}{85}t + 21$. I re-implemented the data generator myself and verified that it uses the same labeling rule as the course's \texttt{load\_coffee\_data} by comparing it with a publicly available, unofficial copy of the lab file, since the official copy was not accessible to me; no course files are redistributed with this work. Unlike the lab, which uses 200 points, I draw 2{,}000 fresh training points and 2{,}000 test points (seeds 0 and~1); 20.95\% of the training points are good roasts. Features are standardized with the training statistics. The good region has exactly three edges, so three hidden units are the natural minimum.
+
+\paragraph{Networks and training.} Networks follow Eq.~\eqref{eq:net} with a sigmoid output and binary cross-entropy. I trained widths 2, 3, 4, 6, 8, 16, 32 and 64, with 40 seeds each, using Glorot-uniform weights and zero biases~\cite{glorot2010understanding} and full-batch Adam~\cite{kingma2015adam} (learning rate 0.01, 3{,}000 steps, no weight decay). Because training is full batch, the initialization is the only source of randomness. Before the main run I checked the learning rate against a rule fixed in advance (loss always finite; no rebound of more than 10\% after step 200; final loss within 5\% of the lowest); all 10 check runs (5 seeds at widths 3 and 64) passed.
+
+\paragraph{Inclusion and pairing.} A network is included if its training error is at most 2\%. Included networks are paired disjointly in seed order, so pairs are independent samples. Inclusion was 0 of 40 at width~2, 23 of 40 at width~3 (11 pairs) and 40 of 40 at every larger width (20 pairs).
+
+\paragraph{Barrier.} I evaluate Eq.~\eqref{eq:barrier} at 25 evenly spaced values of $\alpha$. The \emph{training-error barrier}, in percentage points (1 point = 20 of 2{,}000 points), decides every verdict, with $\eps = 0.5$ points (10 points of the training set) as the threshold for ``removed''. The test-error barrier is reported alongside. Loss barriers are reported only after output-scale calibration (Section~\ref{sec:pitfalls}).
+
+\paragraph{Alignment modes.} Before interpolating, network $B$ is aligned to network $A$ in one of five ways:
+\begin{itemize}[leftmargin=*]
+\item \md{none}: no alignment.
+\item \md{wm}: weight matching~\cite{ainsworth2023git}. For one hidden layer this is a single linear assignment problem: I represent each unit by $u_i = (w_i, b_i, s_i) \in \mathbb{R}^4$ and choose the permutation maximizing $\sum_i u_i^{A\top} u_{\pi(i)}^{B}$ (Hungarian algorithm~\cite{kuhn1955hungarian}).
+\item \md{wm\_sign}: the same with sign flips allowed, solved by maximizing $\sum_i |u_i^{A\top} u_{\pi(i)}^{B}|$ and flipping unit $\pi(i)$ by Eq.~\eqref{eq:flip} when its inner product is negative, as in~\cite[Proposition~1]{boufalis2025symmetry}. The output-bias shift of a flip is not part of the matching objective.
+\item \md{bf\_perm} and \md{bf\_sign}: brute force over all permutations (widths up to 8) or all permutations and flips (widths up to 6), choosing the alignment with the lowest loss at the midpoint, the surrogate of~\cite{entezari2022role}.
+\end{itemize}
+A sixth pair of modes, \md{exact\_perm} and \md{exact\_sign}, chooses by the full 25-point error barrier instead; these belong to the post-hoc analysis of Section~\ref{sec:b1}.
+
+\paragraph{Pre-registration.} The hypotheses and questions in Table~\ref{tab:prereg} were fixed in my design sessions of 4--5 October 2026 and recorded in my research notebook before any network was trained. The numerical thresholds (inclusion rule, line-matching tolerances, $\eps$, the H2 band, and the H1b distance and test) were dated 7--8 October, before the main run on 9 October. Three things were \emph{not} dated in advance: the pass fractions named in the falsifiers of Q1, Q3 and Q4, and which aligned mode Q2 should use. None of the answers below depends on them except Q3, which I therefore report as counts only. This was an informal pre-registration: the record is a dated private research notebook, not a public registry such as OSF. The project was not under version control at the time, so there is no pre-registration commit; the dated notebook is the record, and it is available from me on request. Everything decided after seeing results is labelled \emph{post-hoc} below.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Pre-registered hypotheses (H) and questions (Q). A line ``matches'' if its angle differs by at most $10^\circ$ and its offset by at most 0.25 standardized units.}
+\label{tab:prereg}
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+ & Prediction or question & Falsified if \\
+\midrule
+H1 & More than half of converged width-3 pairs learn the same three lines & Half or fewer of the pairs match on every line \\
+H1b & Seeds with higher training error have lines further from the other seeds' & Spearman $\rho \le 0$ over all 40 width-3 seeds \\
+H2 & The \md{wm}-aligned blend at width~3 is slightly worse, about 1.8 points & The median falls outside 0.5--3 points \\
+H3 & The aligned (\md{wm}) barrier shrinks with width & Width 64's median is not below width 3's (a rise-then-fall counts as a partial miss) \\
+\midrule
+Q1 & Do independently trained width-3 networks learn the same lines? & --- \\
+Q2 & How does the barrier change with width? & --- \\
+Q3 & Does weight matching find the barrier-minimizing alignment? & --- \\
+Q4 & Do sign flips lower the barrier beyond permutations? & --- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Results}
+\label{sec:results}
+
+All values are medians over pairs with 95\% percentile bootstrap intervals~\cite{efron1979bootstrap} (10{,}000 resamples of pairs); paired differences are medians of per-pair differences. Appendix~\ref{app:tables} lists every value.
+
+\subsection{Width-3 networks learn the same three lines (H1 supported, H1b supported)}
+
+All 11 of 11 width-3 pairs matched on every line (largest angle difference $2.0^\circ$, largest offset 0.12; Figure~\ref{fig:lines}), so H1 is supported and the answer to Q1 is yes. For comparison, 16 of 20 width-4 pairs matched. The claim covers networks that finished training: at a looser 5\% inclusion rule, 10 of 12 width-3 pairs matched, and the two that did not match differed by $39.5^\circ$ and $23.9^\circ$.
+
+For H1b, the Spearman rank correlation~\cite{spearman1904proof} between a seed's training error and its median distance to the other seeds' lines is $\rho = 0.800$ [0.625, 0.886] over all 40 width-3 seeds, so H1b is supported. The support comes from two separate groups rather than a smooth trend: 23 seeds that finished training (error 0.65--1.3\%, distance 0.20--0.52 threshold units) and 17 that did not (error 3.65--16.85\%, distance 2.4--10.8). Within each group the correlation is weak ($\rho = 0.17$ and $0.42$).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\linewidth]{figures/fig1_lines.png}
+\caption{The three hidden-unit lines of all 23 included width-3 networks, drawn in original units over the training data (red: good roasts). Independently trained networks learn the same three edges of the triangle.}
+\label{fig:lines}
+\end{figure}
+
+\subsection{Permutations leave the barrier; sign flips remove it (H2 not supported, Q4 yes)}
+\label{sec:flips}
+
+Although the width-3 networks compute the same three lines, the median \md{wm} barrier is \textbf{17.95 [16.07, 21.05] points}, far outside the 0.5--3 band I predicted, so H2 is not supported. Without alignment the median is 20.05 points. Reordering hidden units alone does not align these networks.
+
+Allowing sign flips changes the picture (Figures~\ref{fig:barrier} and~\ref{fig:paths}). The pre-registered Q4 measure compares the best permutation (\md{bf\_perm}) with the best permutation and flip pattern (\md{bf\_sign}): flips lowered the training-error barrier by more than $\eps$ in \textbf{10 of 11} pairs at width~3, 16 of 20 at width~4 and 16 of 20 at width~6, with median drops of 17.79, 7.72 and 3.37 points (paired interval at width~3: $-17.79$ [$-20.18$, $-15.14$]). The best sign-aware alignment used at least one flip in 10 of 11 width-3 pairs. The \md{wm\_sign} barrier at width~3 is 0.00 [0.00, 0.05]. Beyond the Q4 measure, the per-pair difference \md{wm\_sign}~$-$~\md{wm} has its whole interval below zero at every width, from $-17.84$ [$-21.05$, $-16.07$] at width~3 to $-0.61$ [$-0.93$, $-0.38$] at width~64.
+
+The mechanism is visible in Eq.~\eqref{eq:flip}. Two networks that differ by a flip of unit $i$ compute the same function, but halfway along the straight line between them that unit's input weights, bias and output weight all blend to zero. Its contribution to the logit then changes by $-s_i(\sigma(z) - \tfrac12)$, which is up to $|s_i|/2$ in size. On one trained width-3 network (seed~1, unit~2, $s = -11.14$), the straight blend to its own flipped copy changes the logit by up to 5.57 and reaches 20.95\% training error (Figure~\ref{fig:spare}). Permutation matching cannot undo such a flip; it can only choose which unit is paired with which.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/fig3_paths.png}
+\caption{Training error along the straight path between one pair of width-3 networks, with no alignment, with weight matching, and with weight matching plus sign flips.}
+\label{fig:paths}
+\end{figure}
+
+\subsection{Post-hoc: an exhaustive search over the complete group}
+\label{sec:b1}
+
+After the pre-registered questions were answered, I asked how large a barrier remains after searching \emph{every} permutation and sign flip and choosing by the full 25-point error barrier rather than the midpoint. The rules for this analysis, including the irreducibility checks and the threshold for ``removed'' (upper quartile at most $\eps$), were dated on 9 October, before the search ran. A network was flagged \emph{nearly reducible} if its smallest output weight was below 5\% of its largest, if two of its own units matched under the same line tolerance used for H1, or if a unit's activation varied by less than 0.01 (standard deviation) over the training data.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Post-hoc complete-group search (\md{exact\_sign}): training-error barrier left after the best of all $2^h h!$ permutation-and-flip combinations, chosen by the full barrier.}
+\label{tab:b1}
+\begin{tabular}{@{}rrcrr@{}}
+\toprule
+Width & Pairs & Residual: median / upper quartile / max & Pairs above $\eps$ & Pairs with a nearly reducible network \\
+\midrule
+3 & 11 & 0.00 / 0.04 / 0.11 & 0 & 0 of 11 \\
+4 & 20 & 0.08 / 0.11 / 1.44 & 1 & 20 of 20 \\
+6 & 20 & 0.33 / 0.52 / 1.78 & 5 & 20 of 20 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At width~3, the residual is at most \textbf{0.11 points} in all 11 pairs (Table~\ref{tab:b1}). Every included width-3 network is irreducible: the closest pair of units within a network is at a median of 4.2 threshold units, where 1 would mean the same line. The search therefore covers every exact symmetry these networks have, and exact symmetries account for essentially the whole barrier. The result holds at 1\% and 5\% inclusion (maximum residual 0.09 and 0.47 points; no included network nearly reducible).
+
+At widths 4, 6 and 8, nearly every network has two units on almost the same line, with a spare unit copying one of the three lines the task needs (37 of 40 networks at width~4, and all networks at widths 6 and~8). Such networks have continuous near-symmetries outside the finite group, so their residuals are upper bounds only; I stated this risk before the search. Width~6 falls short of the ``removed'' threshold by 0.02 (upper quartile 0.517). I decided after seeing the width-6 result not to run the signed search at width~8 (10.3 million candidates per pair), since its networks are all nearly reducible.
+
+For the question raised by Ainsworth et al.~\cite[Section~5.3]{ainsworth2023git}, the answer \emph{for these sigmoid networks on this task} is ``another symmetry'': permutation matching leaves a large barrier because a sign flip is not a permutation, and once flips are included, both weight matching and the exhaustive search remove the barrier at width~3. ReLU networks have no sign-flip symmetry, so this explanation does not carry over to the ReLU networks of their experiments, where the question remains open.
+
+\subsection{Width dependence (H3 supported, Q2)}
+
+The median \md{wm} barrier falls from 17.95 points at width~3 to \textbf{1.10 [0.86, 1.42]} at width~64, so H3 is supported. It rises by 0.31 points between width~16 (1.23) and width~32 (1.54). I judged after the run that this is not the falsifier's ``rise-then-fall'', because the curve does not first rise from width~3 and 0.31 is below $\eps$; the intervals ([0.91, 1.68] and [0.83, 2.03]) overlap.
+
+For Q2: without alignment the median barrier stays near 20 points up to width~8 and then falls to 9.29 [7.67, 15.60] at width~64. With \md{wm} it shrinks, but its upper quartile stays above $\eps$ at every width (1.61--20.31). With \md{wm\_sign} the barrier is removed at widths 3 and~4 (upper quartiles 0.04 and 0.11), but not from width 6 to~64 (upper quartiles 0.77--1.30, medians 0.39--1.02). Reporting both aligned modes was a post-hoc decision, because Q2 did not name one. The test-set barrier gives the same answers at every width.
+
+\subsection{Does weight matching find the best alignment? (Q3, counts only)}
+
+Table~\ref{tab:q3} compares weight matching with brute force, counting a pair as ``same'' when the two barriers differ by at most $\eps$. Under the pre-registered comparison, weight matching ``beat'' brute force in 7 pairs, by up to 20 points. This is possible only because brute force chose by the midpoint. Entezari et al.\ found the midpoint an accurate surrogate in their settings~\cite[footnote~3]{entezari2022role}, but in these small networks the error peak sometimes lies elsewhere: in all 7 pairs it lay more than 0.05 from $\alpha = 0.5$ ($\alpha = 0.375$ to $0.708$). The post-hoc exact search removes this artifact. With sign flips, weight matching finds the best alignment at widths 3 and~4 and drifts from it as width grows. With flips, the midpoint and full-barrier rules never differed by more than $\eps$.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Q3: weight matching against brute force (pairs where weight matching is the same / worse / better, within $\eps$). Left: pre-registered comparison with midpoint-chosen brute force. Right: post-hoc comparison with the exact search. ---: not computed; the signed search was not run at width~8 (10.3 million candidates per pair; see Section~\ref{sec:b1}).}
+\label{tab:q3}
+\begin{tabular}{@{}rcc|cc@{}}
+\toprule
+ & \multicolumn{2}{c|}{Pre-registered (midpoint)} & \multicolumn{2}{c}{Post-hoc (exact)} \\
+Width & \md{wm} vs.\ \md{bf\_perm} & \md{wm\_sign} vs.\ \md{bf\_sign} & \md{wm} vs.\ \md{exact\_perm} & \md{wm\_sign} vs.\ \md{exact\_sign} \\
+\midrule
+3 & 8 / 2 / 1 & 11 / 0 / 0 & 7 / 4 / 0 & 11 / 0 / 0 \\
+4 & 11 / 4 / 5 & 19 / 1 / 0 & 15 / 5 / 0 & 19 / 1 / 0 \\
+6 & 14 / 6 / 0 & 11 / 9 / 0 & 12 / 8 / 0 & 11 / 9 / 0 \\
+8 & 9 / 10 / 1 & --- & 8 / 12 / 0 & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{One spare neuron connects all symmetry copies}
+\label{sec:spare}
+
+Two networks that differ by a sign flip compute the same function, yet, as shown above, the straight line between them has a large bump. This section shows that with one extra hidden unit there is a path between them along which the function never changes, and that combining this move with permutations reaches every symmetry copy.
+
+\begin{lemma}[Flip through a spare unit]
+\label{lem:flip}
+Take unit $i$ of Eq.~\eqref{eq:net} with parameters $(w_i, b_i, s_i)$ and add a spare unit $k$ with input parameters $(-w_i, -b_i)$ and output weight $0$. For every $t$ and every input, with $z = w_i^\top x + b_i$,
+\begin{equation}
+(s_i - t)\,\sigma(z) \;-\; t\,\sigma(-z) \;+\; (c + t) \;=\; s_i\,\sigma(z) + c .
+\label{eq:lemma}
+\end{equation}
+\end{lemma}
+\begin{proof}
+$-t\,\sigma(-z) + t = -t\,(1-\sigma(z)) + t = t\,\sigma(z)$.
+\end{proof}
+
+Sliding $t$ from $0$ to $s_i$ along this straight segment moves the whole contribution of unit $i$ onto the spare: at $t = s_i$, unit $i$ has output weight zero and the spare is exactly the sign-flipped unit $i$ of Eq.~\eqref{eq:flip}. On the trained width-3 network of Section~\ref{sec:flips}, this path changes the logit by at most $5\times10^{-15}$ (rounding error) and keeps the training error at 0.65\% throughout, while the straight blend to the flipped copy peaks at 20.95\% (Figure~\ref{fig:spare}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/b2_spare_path.png}
+\caption{Width-3 network (seed 1), unit 2 flipped ($s = -11.14$). Left: largest change in the logit over the training inputs. Right: training error. Blue: straight blend to the flipped copy at width~3. Orange: the spare-neuron path of Lemma~\ref{lem:flip} at width~4, along which the function is unchanged.}
+\label{fig:spare}
+\end{figure}
+
+\begin{proposition}[One spare neuron connects all exact symmetry copies]
+\label{prop:spare}
+Let $f$ be a one-hidden-layer sigmoid network of width $r$ with an output bias, embedded in width $r+1$ by adding a unit with output weight $0$. Then each of the $2^r r!$ permutation and sign-flip copies of $f$, embedded in the same way, is joined to $f$ by a piecewise-linear path in parameter space with at most $10r - 6$ segments, along which the network function is exactly constant for every input.
+\end{proposition}
+\begin{proof}
+Three moves keep the function exactly constant along a straight segment:
+\begin{itemize}[leftmargin=*]
+\item[(M1)] A unit with output weight $0$ may move its input weights and bias anywhere.
+\item[(M2)] Two units with identical input weights and biases may trade output weight, keeping the sum fixed, since $(a+b)\,\sigma(z)$ depends only on $a+b$.
+\item[(M3)] If unit $k$ has input parameters $(-w_i, -b_i)$ and output weight $0$, then Lemma~\ref{lem:flip} moves the contribution of unit $i$ onto $k$, flipped.
+\end{itemize}
+Let $k$ be the spare unit. A \emph{transposition} of units $i$ and $j$ takes six segments: M1 (copy $i$'s input parameters into $k$), M2 ($i \to k$), M1 (copy $j$'s into $i$), M2 ($j \to i$), M1 (copy $k$'s into $j$), M2 ($k \to j$); the spare again has output weight zero at the end. A \emph{flip} of unit $i$ takes four: M1 (set $k$ to $(-w_i, -b_i)$), M3, M1 (copy $k$'s input parameters into $i$), M2 ($k \to i$). Any permutation of $r$ elements is a product of at most $r-1$ transpositions, and any sign pattern is a product of at most $r$ single-unit flips, so every copy is reached in at most $6(r-1) + 4r = 10r - 6$ segments.
+\end{proof}
+
+The permutation part follows the idea of Şimşek et al.~\cite{simsek2021geometry}, whose construction connects permutation copies through straight segments; the flip move M3 is, to my knowledge, new. I also checked the construction numerically on a random width-3 network with 5{,}000 random inputs, applying two transpositions and two flips: the largest change in the output along the whole path was $5.3\times10^{-15}$, and the end point equalled the target copy exactly. Two limits apply. The proposition concerns a network embedded with an inactive spare unit (output weight zero), not two independently trained networks of width $r+1$. It shows that a flat path \emph{exists}; it does not address the straight-line barrier, which is what the experiments measure. In the language of Zhao et al.~\cite{zhao2025understanding}, sign-flipped copies are separate components of the set of equivalent networks at width $r$, and one extra unit joins them with an explicit curve of constant function, in the spirit of their symmetry-induced curves (Section~6.1).
+
+\section{Pitfalls and a side-check}
+\label{sec:pitfalls}
+
+\paragraph{Training length inflates loss barriers.} The coffee labels are separable, so cross-entropy keeps growing the weights: after 3{,}000 steps the median weight norm (input and output weights of included networks) rises from 32.2 at width~3 to 66.5 at width~64 (Appendix~\ref{app:b4}). A misclassified point's loss grows with the weight scale, so raw loss barriers depend on training length and would mix that into the width trend. Zhao et al.\ make a related point precise: with a rescaling symmetry, two parameter settings of the same function can have an arbitrarily large loss barrier between them~\cite[Proposition~5.3]{zhao2025understanding}. I therefore base every verdict on the error barrier and report loss barriers only after choosing the best of 41 output scales (0.25 to 8, log-spaced) at each blend point, an idea similar in spirit to the temperature calibration of Ito et al.~\cite{ito2026permutations}. This range proved too narrow for 43 of 131 unaligned pairs, whose best scale sat at the lower edge, so calibrated losses for unaligned pairs are only partly calibrated. Aligned pairs almost never hit the edge.
+
+\paragraph{Weight decay.} Ito et al.~\cite{ito2026permutations} report that sufficiently wide image networks (MLPs, VGG-11 and ResNet-20 widened up to 16--32$\times$) become linearly connected without permutations after temperature calibration, using weight decay 0.003 in most runs. With weaker decay ($10^{-4}$), VGG-11 and ResNet-20 show large barriers (their Section~5.4), although their Appendix~F.9 notes that for sufficiently wide models, smaller weight decay gave smaller barriers. Their explanation is stated for bias-free ReLU networks with low-rank weights. My main run used no weight decay. As a side-check with a rule dated before the run, I trained 40 width-64 networks with L2 regularization 0.003 added to the gradient inside Adam (not decoupled weight decay, so not a replication of any published setting). \textbf{None of the 40 networks met the inclusion rule}: all stopped at 6.15--6.80\% training error, with weights about 7 times smaller (median norm 9.4 against 66.5). With no included pairs, the dated rule gives no verdict. An exploratory comparison on all 40 networks, ignoring inclusion and decided after seeing this result, shows no clear change in the unaligned barrier (median 9.29 without decay against 14.32 with it; interval of the difference [$-1.30$, 6.68]). These networks are underfit and roughly a hundred times narrower than those of Ito et al., so this side-check does not bear on their findings.
+
+\section{Robustness}
+\label{sec:robust}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Inclusion threshold.} Rerunning the analysis at 1\% and 5\% inclusion changes no verdict. Two qualifications: at 1\%, the width-3 paired intervals for the flip effect reach zero at their upper end (\md{wm\_sign}~$-$~\md{wm}: $-17.70$ [$-22.16$, 0.00]), because 3 of 9 pairs needed no flip at all, although the count-based Q4 answer stands; at 5\%, H1 holds with 10 of 12 pairs.
+\item \textbf{Test set.} The test-error barrier tracks the training-error barrier at every width (for example, \md{wm} at width~3: 17.95 training, 18.95 test).
+\item \textbf{Reproduction.} A clean copy of the project, run from one script, reproduced the main result files byte for byte (Section~\ref{sec:repro}).
+\end{itemize}
+
+\section{Limitations}
+\label{sec:limits}
+
+\begin{itemize}[leftmargin=*]
+\item One architecture (one hidden layer, sigmoid), one two-dimensional task, widths 2 to 64, and one optimizer setting (3{,}000 full-batch Adam steps).
+\item ``Exact symmetry'' means equality of the function on all inputs. A network that matches another only on the data, an approximate symmetry in the sense of~\cite{vlacic2020affine,burgin2026beyond}, is not in the search and could lower the barrier further.
+\item The complete-group result is clean only at width~3. From width~4 upward the networks are nearly reducible, and the finite search no longer covers all near-symmetries.
+\item No width-2 network reached the inclusion threshold, so the minimal-width regime rests on width~3 alone, with 11 pairs.
+\item This study does not test the conjecture of Entezari et al., which concerns wide networks, nor the findings of Ito et al.
+\item Several decisions were taken after seeing results; each is labelled in the text and dated in my research notebook.
+\end{itemize}
+
+\section{Conclusion}
+
+In the minimal-width sigmoid networks studied here, the barrier that permutation matching leaves behind is not a failure of matching but a missing symmetry. Sign flips account for it almost entirely: at width~3, permutations leave 17.95 points of training-error barrier, an exhaustive search over the complete exact group leaves at most 0.11, and one spare neuron turns each sign flip into a path of constant function. Three questions follow. First, what does a teacher--student analysis in the style of Zhan et al.~\cite{zhan2025analyzing} predict for sigmoid or $\tanh$ networks, where sign flips must enter the matching? Second, how much of the small residual barrier at widths 4 and above comes from near-symmetries of nearly reducible networks or from symmetries that hold only on the data? Third, does the picture survive depth, other tasks, and a weaker weight decay chosen by a rule fixed in advance?
+
+\section*{Acknowledgments}
+
+This study builds directly on the work of Entezari et al., Ainsworth et al.\ and Benzing et al., whose clearly stated open questions motivated it, and on the theoretical results of Sussmann, Şimşek et al., Zhan et al.\ and Zhao et al. I am grateful to all of these authors for making their work openly available. The coffee-roasting task comes from the Machine Learning Specialization by Andrew Ng, DeepLearning.AI and Stanford Online.
+
+\section*{Reproducibility statement}
+\label{sec:repro}
+
+Code, result files and figures are released with this paper at \textbf{[repository URL and Zenodo DOI to be added at release]}; the dated research notebook is available on request. A single script (\texttt{run.sh} on Linux and macOS, \texttt{run.ps1} on Windows) runs the unit tests, the learning-rate check, training, every pre-registered and post-hoc analysis except the optional exhaustive search (\texttt{src/run\_b1.py}, several hours), the bootstrap intervals, the figures, the inclusion sensitivity check, the spare-neuron figure and the weight-decay side-check. It took 87 minutes on a Windows laptop (CPU only, NumPy). Run from a clean copy of the project, it produced byte-identical \texttt{barriers.csv} and \texttt{h1b.csv} and identical report tables. Software: Python 3.12.10, NumPy 2.5.3, SciPy 1.18.1, pandas 3.0.5, Matplotlib 3.11.2. All randomness is seeded.
+
+\section*{Authorship and use of AI assistance}
+
+The research questions and hypotheses are mine; I chose the pre-registered rules, several from options Claude proposed, and ran every experiment on my own machine. I used Claude (Anthropic) as an AI research and coding assistant: it wrote most of the code and analysis scripts, which I tested and parts of which I wrote or re-implemented myself as checks; it searched for and summarized related work, of which I read the sections this paper relies on; it wrote the proof of Proposition~\ref{prop:spare}, whose lemma I derived on paper with its guidance and tested on my own trained network (Figure~\ref{fig:spare}); and it drafted the text from my research notes, which I reviewed line by line and approved. A separate Claude instance audited every number against the result files. No third-party code is included. I am responsible for the content.
+
+\bibliographystyle{unsrtnat}
+\bibliography{refs}
+
+\clearpage
+\appendix
+
+\section{Full results}
+\label{app:tables}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Training-error barrier (points; median [95\% bootstrap interval over pairs]), calibrated loss barrier (median) and test-error barrier (median, points) for every width and alignment mode. Generated directly from the result files.}
+\label{tab:full}
+\begin{tabular}{@{}rlrlrr@{}}
+\toprule
+Width & Mode & Pairs & Training-error barrier & Cal.\ loss barrier & Test-error barrier \\
+\midrule
+3 & \md{bf\_perm} & 11 & 17.88 [15.16, 20.22] & 0.355 & 18.90 \\
+ & \md{bf\_sign} & 11 & 0.00 [0.00, 0.05] & 0.000 & 0.02 \\
+ & \md{none} & 11 & 20.05 [19.90, 21.50] & 0.393 & 20.84 \\
+ & \md{wm} & 11 & 17.95 [16.07, 21.05] & 0.283 & 18.95 \\
+ & \md{wm\_sign} & 11 & 0.00 [0.00, 0.05] & 0.000 & 0.02 \\
+\midrule
+4 & \md{bf\_perm} & 20 & 7.77 [3.43, 15.39] & 0.199 & 8.69 \\
+ & \md{bf\_sign} & 20 & 0.08 [0.04, 0.10] & 0.000 & 0.06 \\
+ & \md{none} & 20 & 20.13 [19.97, 20.44] & 0.392 & 20.86 \\
+ & \md{wm} & 20 & 7.77 [3.43, 14.30] & 0.227 & 8.69 \\
+ & \md{wm\_sign} & 20 & 0.09 [0.04, 0.11] & 0.000 & 0.06 \\
+\midrule
+6 & \md{bf\_perm} & 20 & 4.68 [1.71, 6.15] & 0.082 & 5.20 \\
+ & \md{bf\_sign} & 20 & 0.39 [0.21, 0.48] & 0.005 & 0.55 \\
+ & \md{none} & 20 & 20.23 [17.83, 20.33] & 0.335 & 20.92 \\
+ & \md{wm} & 20 & 5.55 [1.89, 6.57] & 0.106 & 5.98 \\
+ & \md{wm\_sign} & 20 & 0.84 [0.34, 1.17] & 0.012 & 1.08 \\
+\midrule
+8 & \md{bf\_perm} & 20 & 1.94 [1.30, 2.98] & 0.039 & 2.44 \\
+ & \md{none} & 20 & 20.09 [18.85, 20.24] & 0.352 & 20.64 \\
+ & \md{wm} & 20 & 2.68 [1.46, 5.97] & 0.070 & 3.55 \\
+ & \md{wm\_sign} & 20 & 1.02 [0.54, 1.24] & 0.017 & 1.05 \\
+\midrule
+16 & \md{none} & 20 & 14.38 [8.12, 19.45] & 0.264 & 15.44 \\
+ & \md{wm} & 20 & 1.23 [0.91, 1.68] & 0.025 & 1.45 \\
+ & \md{wm\_sign} & 20 & 0.46 [0.31, 0.79] & 0.008 & 0.57 \\
+\midrule
+32 & \md{none} & 20 & 11.10 [9.49, 13.08] & 0.217 & 11.95 \\
+ & \md{wm} & 20 & 1.54 [0.83, 2.03] & 0.033 & 1.61 \\
+ & \md{wm\_sign} & 20 & 0.39 [0.26, 0.68] & 0.007 & 0.28 \\
+\midrule
+64 & \md{none} & 20 & 9.29 [7.67, 15.60] & 0.197 & 10.42 \\
+ & \md{wm} & 20 & 1.10 [0.86, 1.42] & 0.023 & 1.20 \\
+ & \md{wm\_sign} & 20 & 0.54 [0.31, 0.72] & 0.010 & 0.45 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Weight matching minus brute force, per pair (points; median [95\% interval]). Positive: weight matching is worse.}
+\label{tab:q3diff}
+\begin{tabular}{@{}rlrl@{}}
+\toprule
+Width & Comparison & Pairs & Median per-pair difference \\
+\midrule
+3 & \md{wm} $-$ \md{bf\_perm} & 11 & 0.00 [0.00, 0.00] \\
+4 & \md{wm} $-$ \md{bf\_perm} & 20 & 0.00 [0.00, 0.00] \\
+6 & \md{wm} $-$ \md{bf\_perm} & 20 & 0.01 [0.00, 0.77] \\
+8 & \md{wm} $-$ \md{bf\_perm} & 20 & 0.63 [0.08, 1.34] \\
+3 & \md{wm\_sign} $-$ \md{bf\_sign} & 11 & 0.00 [0.00, 0.00] \\
+4 & \md{wm\_sign} $-$ \md{bf\_sign} & 20 & 0.00 [0.00, 0.00] \\
+6 & \md{wm\_sign} $-$ \md{bf\_sign} & 20 & 0.26 [0.00, 0.62] \\
+3 & \md{wm} $-$ \md{exact\_perm} & 11 & 0.00 [0.00, 0.90] \\
+4 & \md{wm} $-$ \md{exact\_perm} & 20 & 0.00 [0.00, 0.00] \\
+6 & \md{wm} $-$ \md{exact\_perm} & 20 & 0.42 [0.05, 1.38] \\
+8 & \md{wm} $-$ \md{exact\_perm} & 20 & 1.03 [0.42, 2.42] \\
+3 & \md{wm\_sign} $-$ \md{exact\_sign} & 11 & 0.00 [0.00, 0.00] \\
+4 & \md{wm\_sign} $-$ \md{exact\_sign} & 20 & 0.00 [0.00, 0.00] \\
+6 & \md{wm\_sign} $-$ \md{exact\_sign} & 20 & 0.34 [0.00, 0.66] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{With sign flips minus without, per pair (points; median [95\% interval]). Negative: flips lower the barrier.}
+\label{tab:q4diff}
+\begin{tabular}{@{}rlrl@{}}
+\toprule
+Width & Comparison & Pairs & Median per-pair difference \\
+\midrule
+3 & \md{wm\_sign} $-$ \md{wm} & 11 & $-$17.84 [$-$21.05, $-$16.07] \\
+4 & \md{wm\_sign} $-$ \md{wm} & 20 & $-$7.72 [$-$14.26, $-$3.30] \\
+6 & \md{wm\_sign} $-$ \md{wm} & 20 & $-$3.67 [$-$5.81, $-$0.91] \\
+8 & \md{wm\_sign} $-$ \md{wm} & 20 & $-$1.32 [$-$4.55, $-$0.54] \\
+16 & \md{wm\_sign} $-$ \md{wm} & 20 & $-$0.76 [$-$1.05, $-$0.36] \\
+32 & \md{wm\_sign} $-$ \md{wm} & 20 & $-$1.00 [$-$1.36, $-$0.47] \\
+64 & \md{wm\_sign} $-$ \md{wm} & 20 & $-$0.61 [$-$0.93, $-$0.38] \\
+3 & \md{bf\_sign} $-$ \md{bf\_perm} & 11 & $-$17.79 [$-$20.18, $-$15.14] \\
+4 & \md{bf\_sign} $-$ \md{bf\_perm} & 20 & $-$7.72 [$-$15.31, $-$3.35] \\
+6 & \md{bf\_sign} $-$ \md{bf\_perm} & 20 & $-$3.37 [$-$5.80, $-$1.15] \\
+3 & \md{exact\_sign} $-$ \md{exact\_perm} & 11 & $-$17.79 [$-$20.02, $-$15.14] \\
+4 & \md{exact\_sign} $-$ \md{exact\_perm} & 20 & $-$7.72 [$-$12.26, $-$3.35] \\
+6 & \md{exact\_sign} $-$ \md{exact\_perm} & 20 & $-$2.83 [$-$5.58, $-$0.93] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Weight norms and the weight-decay side-check}
+\label{app:b4}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Median weight norm (input and output weights, biases excluded) of included networks after 3{,}000 steps, no weight decay.}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Width & 3 & 4 & 6 & 8 & 16 & 32 & 64 \\
+\midrule
+Median norm & 32.19 & 33.69 & 38.56 & 41.02 & 46.88 & 54.96 & 66.50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Exploratory weight-decay comparison at width 64 (all 40 networks, inclusion ignored; 20 pairs with the same initializations as the main run). Medians; interval for median(decay) $-$ median(base). Decided after seeing that no decay network met the inclusion rule.}
+\begin{tabular}{@{}llrrl@{}}
+\toprule
+Mode & Measure & No decay & L2 0.003 & 95\% interval \\
+\midrule
+\md{none} & error barrier (points) & 9.29 & 14.32 & [$-1.30$, 6.68] \\
+\md{none} & calibrated loss barrier & 0.197 & 0.244 & [$-0.024$, 0.074] \\
+\md{wm} & error barrier (points) & 1.10 & 1.31 & [$-0.67$, 2.20] \\
+\md{wm} & calibrated loss barrier & 0.023 & 0.020 & [$-0.013$, 0.016] \\
+\md{wm\_sign} & error barrier (points) & 0.54 & 0.12 & [$-0.68$, 0.32] \\
+\md{wm\_sign} & calibrated loss barrier & 0.010 & 0.002 & [$-0.015$, 0.001] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Timeline of decisions}
+\label{app:timeline}
+
+\begin{table}[H]
+\centering
+\small
+\caption{When each decision was taken. Post-hoc decisions are marked.}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Date (2026) & Decision \\
+\midrule
+4--5 Oct & Hypotheses H1--H3 and questions Q1--Q4 fixed and recorded, before any training \\
+7 Oct & Learning-rate rule written, then checked (10 of 10 runs passed); coffee rule compared with the public lab files \\
+8 Oct & Inclusion rule (2\%), line tolerances ($10^\circ$, 0.25), $\eps = 0.5$, H2 band (0.5--3), H1b distance and test; training-error barrier chosen as the deciding quantity \\
+9 Oct & Main run; pre-registered verdicts written; inclusion sensitivity (1\% and 5\%); rules for the complete-group search dated before it ran \\
+9--10 Oct & Complete-group search; decision not to run the signed width-8 search (post-hoc) \\
+10 Oct & Weight-decay rule dated \\
+11 Oct & Weight-decay run; exploratory comparison decided after the result (post-hoc); bootstrap intervals; independent numeric audit of the draft; reproduction from a clean copy; proof of Proposition~\ref{prop:spare} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\end{document}

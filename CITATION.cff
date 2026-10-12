@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Permutations Are Not Enough: Sign Flips Explain the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks"
+authors:
+  - family-names: Lakhanpal
+    given-names: Mrigesh
+    orcid: "https://orcid.org/0009-0007-9539-9091"
+type: software
+version: "1.0.0"
+date-released: "2026-10-12"
+license: MIT
+keywords:
+  - linear mode connectivity
+  - permutation symmetry
+  - sign-flip symmetry
+  - sigmoid networks
+  - loss landscape
