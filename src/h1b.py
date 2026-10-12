@@ -39,14 +39,14 @@ def median_distances(params):
     Return a NumPy array with one entry per seed: the median of its
     pair_distance to every OTHER seed (never to itself).
     """
-    result = []                              # one median per seed goes here
-    for i in range(len(params)):             # "for each seed"
-        dists = []                           # a fresh, empty collection for this seed
-        for j in range(len(params)):         # "every ... seed"
-            if i == j:                       # "... other": when should we skip?
-                continue                     # 'continue' = skip to the next j
-            dists.append(pair_distance(params[i], params[j]))             # "collect its distance": distance between which two?
-        result.append(np.median(dists))                # "take the median" of the collection
+    result = []                              # one median per seed
+    for i in range(len(params)):
+        dists = []
+        for j in range(len(params)):
+            if i == j:                       # skip the seed itself
+                continue
+            dists.append(pair_distance(params[i], params[j]))
+        result.append(np.median(dists))
     return np.array(result)
 
 
@@ -65,10 +65,10 @@ def bootstrap_spearman(x, y, n_boot=10_000, seed=0):
     rho = spearmanr(x, y)[0]                      # rho on the real data
     rng = np.random.default_rng(seed)             # fixed seed, so the result repeats exactly
     rhos = []
-    for _ in range(n_boot):                       # '_' = a loop counter we never use
-        idx = rng.integers(0, len(x), len(x))     # (1) how many seeds per draw?
-        rhos.append(spearmanr(x[idx], y[idx])[0]) # (2) which values go in?
-    low, high = np.nanpercentile(rhos, [2.5, 97.5])   # (3) the middle 95%
+    for _ in range(n_boot):
+        idx = rng.integers(0, len(x), len(x))     # one resample of the seeds, with replacement
+        rhos.append(spearmanr(x[idx], y[idx])[0])
+    low, high = np.nanpercentile(rhos, [2.5, 97.5])   # middle 95%
     return float(rho), float(low), float(high)
 
 

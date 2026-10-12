@@ -13,8 +13,8 @@ N = 25   # points along each path, same as the barriers
 
 def add_spare(p, i):
     """Width r -> r + 1: append a spare unit that is the opposite of unit i, output weight 0."""
-    return {"W1": np.vstack([p["W1"], -p["W1"][i]]),          
-            "b1": np.append(p["b1"], -p["b1"][i]),            
+    return {"W1": np.vstack([p["W1"], -p["W1"][i]]),
+            "b1": np.append(p["b1"], -p["b1"][i]),
             "w2": np.append(p["w2"], 0.0),
             "b2": p["b2"]}
 
@@ -22,9 +22,9 @@ def add_spare(p, i):
 def slide(q, i, s, c, t):
     """Step 2 of the lemma at position t (q is the network with the spare as its last unit)."""
     r = {k: np.array(v, dtype=float, copy=True) for k, v in q.items()}
-    r["w2"][i] = s - t                                     
-    r["w2"][-1] = -t                           
-    r["b2"] = c + t                             
+    r["w2"][i] = s - t
+    r["w2"][-1] = -t
+    r["b2"] = c + t
     return r
 
 

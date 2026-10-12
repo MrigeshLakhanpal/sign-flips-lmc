@@ -17,14 +17,14 @@ def median_ci(x, n_boot=N_BOOT, seed=0):
     rng = np.random.default_rng(seed)
     meds = np.empty(n_boot)
     for k in range(n_boot):
-        meds[k] = np.median(rng.choice(x, size=len(x), replace=True)) 
-    return np.percentile(meds, [2.5, 97.5])                      
+        meds[k] = np.median(rng.choice(x, size=len(x), replace=True))
+    return np.percentile(meds, [2.5, 97.5])
 
 
 def paired_diff_ci(a, b, n_boot=N_BOOT, seed=0):
     """Median of the per-pair differences b - a, and its 95% bootstrap interval.
     a[k] and b[k] must be the same pair (same two seeds) under two modes."""
-    d = b - a                                                     
+    d = b - a
     return float(np.median(d)), median_ci(d, n_boot, seed)
 
 

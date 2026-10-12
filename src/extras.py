@@ -17,7 +17,7 @@ def count_flips(pB, pB_aligned):
     uB, uM = unit_vectors(pB), unit_vectors(pB_aligned)
     n = 0
     for row in uM:                                   # each unit of the aligned network
-        if any(np.allclose(row, -u) for u in uB):  
+        if any(np.allclose(row, -u) for u in uB):
             n += 1
     return n
 
@@ -33,5 +33,5 @@ def chosen_scales(pA, pB, X, y, n_alpha=25):
     for a in np.linspace(0, 1, n_alpha):
         p = lerp(pA, pB, a)
         losses = [metrics(p, X, y, s)[0] for s in SCALES]
-        out.append(SCALES[np.argmin(losses)])                     
+        out.append(SCALES[np.argmin(losses)])
     return np.array(out)

@@ -10,7 +10,7 @@ Output logit:         z(x) = sum_i w2[i] * sigmoid(W1[i] . x + b1[i]) + b2
 """
 import numpy as np
 from scipy.optimize import linear_sum_assignment   # needed for weight_match
-from core import permute, unit_vectors              # these two you may use
+from core import permute, unit_vectors              # shared helpers from core.py
 
 
 def flip(p, signs):
@@ -51,7 +51,7 @@ def weight_match(pA, pB, allow_sign=False):
     uB = unit_vectors(pB)
     S = uA @ uB.T
     rows, cols = linear_sum_assignment(-(np.abs(S) if allow_sign else S))
-    perm = cols[np.argsort(rows)]                
+    perm = cols[np.argsort(rows)]
     signs_B = np.ones(len(perm))
     if allow_sign:
         for i, j in enumerate(perm):

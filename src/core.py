@@ -11,8 +11,8 @@ from scipy.optimize import linear_sum_assignment
 
 # ---------------------------------------------------------------- data
 def make_coffee(n, seed):
-    """Coffee-roasting data, rule reconstructed from the Course 2 lab
-    (check it against your copy of lab_coffee_utils.load_coffee_data).
+    """Coffee-roasting data, with the labeling rule of the Course 2 lab's
+    load_coffee_data (checked against a public copy; see the paper, Section 3).
     Temperature 150-285 C, duration 11.5-15.5 min. Good roast = inside the
     triangle t > 175, d > 12, d <= -3/85 * t + 21."""
     rng = np.random.default_rng(seed)

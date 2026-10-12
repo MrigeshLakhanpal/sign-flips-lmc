@@ -3,7 +3,7 @@ Rules dated in the research notebook before the run.
 Check with:  python tests/test_b4.py   (made-up numbers, no coffee data)
 
 Real use (after the extra training run and its analysis):
-  python src/b4.py --base results --wd results_wd --models results/models.pkl
+  python src/b4.py --base results --wd results_wd_all --models results/models.pkl
 """
 import argparse, pickle
 import numpy as np
@@ -14,7 +14,7 @@ EPS = 0.5   # points, pre-registered
 
 def weight_norm(p):
     """L2 norm of all weights (W1 and w2; biases excluded, as weight decay excludes them)."""
-    return float(np.sqrt(np.sum(p["W1"] ** 2) + np.sum(p["w2"] ** 2)))                                  
+    return float(np.sqrt(np.sum(p["W1"] ** 2) + np.sum(p["w2"] ** 2)))
 
 
 def median_norms(runs, max_err=0.02):
@@ -54,7 +54,7 @@ def verdict(drop, lo, hi):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", default="results")
-    ap.add_argument("--wd", default="results_wd")
+    ap.add_argument("--wd", default="results_wd_all")
     ap.add_argument("--models", default="results/models.pkl")
     a = ap.parse_args()
     print("Median weight norm per width (included networks, no weight decay):")

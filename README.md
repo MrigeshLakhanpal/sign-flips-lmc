@@ -41,7 +41,7 @@ python src/run_b1.py                # optional: exhaustive complete-group search
 ## Data and credit
 
 The coffee-roasting task comes from the *Machine Learning Specialization* (Andrew Ng, DeepLearning.AI and Stanford
-Online). The data generator in `src/core.py` is my own re-implementation of the task's labeling rule; **no course
+Online). The data generator in `src/core.py` is a re-implementation of the task's labeling rule written for this project; **no course
 files are included in this repository.**
 
 ## Use of AI assistance
