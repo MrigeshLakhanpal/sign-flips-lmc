@@ -1,8 +1,10 @@
 # Sign Flips, Not Matching Failure, Account for the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks
 
+[![DOI](https://zenodo.org/badge/1415245694.svg)](https://doi.org/10.5281/zenodo.23314245)
+
 **Mrigesh Lakhanpal** · ORCID [0009-0007-9539-9091](https://orcid.org/0009-0007-9539-9091) · Preprint, October 2026
 
-📄 **Paper:** [`paper/Lakhanpal_2026_sign_flips_LMC.pdf`](paper/Lakhanpal_2026_sign_flips_LMC.pdf) · DOI: *[added after the first Zenodo release]*
+📄 **Paper:** [`paper/Lakhanpal_2026_sign_flips_LMC.pdf`](paper/Lakhanpal_2026_sign_flips_LMC.pdf) · DOI: [10.5281/zenodo.23314245](https://doi.org/10.5281/zenodo.23314245)
 
 ## Summary
 
@@ -64,7 +66,8 @@ section states exactly what it did and what I did.
   author = {Mrigesh Lakhanpal},
   title  = {Sign Flips, Not Matching Failure, Account for the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks},
   year   = {2026},
-  note   = {Preprint. DOI to be added},
+  note   = {Preprint},
+  doi    = {10.5281/zenodo.23314245},
   url    = {https://github.com/MrigeshLakhanpal/sign-flips-lmc}
 }
 ```

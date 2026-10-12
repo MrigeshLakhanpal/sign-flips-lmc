@@ -6,9 +6,17 @@ authors:
     given-names: Mrigesh
     orcid: "https://orcid.org/0009-0007-9539-9091"
 type: software
-version: "1.0.0"
+version: "1.0.1"
 date-released: "2026-10-12"
 license: MIT
+doi: "10.5281/zenodo.23314245"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23314245"
+    description: "Concept DOI (all versions)"
+  - type: doi
+    value: "10.5281/zenodo.23314246"
+    description: "Version 1.0.0"
 repository-code: "https://github.com/MrigeshLakhanpal/sign-flips-lmc"
 keywords:
   - linear mode connectivity
