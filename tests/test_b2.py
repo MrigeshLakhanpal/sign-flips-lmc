@@ -43,7 +43,7 @@ def test_paths():
     assert spare_path(p, i, X, y)[:, 0].max() < 1e-9
     mid = straight_path(p, i, X, y)[12, 0]                   # alpha = 0.5
     z = X @ p["W1"][i] + p["b1"][i]
-    expected = np.abs(p["w2"][i] * (sigmoid(z) - 0.5)).max() # Step 4: |s (sigma(z) - 1/2)|
+    expected = np.abs(p["w2"][i] * (sigmoid(z) - 0.5)).max() # |s (sigma(z) - 1/2)|, the midpoint change of Section 4.2
     assert np.isclose(mid, expected)
 
 

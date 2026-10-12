@@ -2,7 +2,7 @@
 
 Copyright (c) 2026 Mrigesh Lakhanpal
 
-The paper (`paper/`) and the figures (`figures/`) are licensed under the Creative Commons Attribution 4.0
+The paper (`paper/`), the figures (`figures/`) and the result files (`results*/`) are licensed under the Creative Commons Attribution 4.0
 International License. You may share and adapt them for any purpose, provided you
 give appropriate credit, link to the license, and indicate if changes were made.
 

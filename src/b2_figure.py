@@ -20,7 +20,7 @@ def add_spare(p, i):
 
 
 def slide(q, i, s, c, t):
-    """Step 2 of the lemma at position t (q is the network with the spare as its last unit)."""
+    """The lemma's path at position t: (s_i, s_k, c) = (s - t, -t, c + t) (q is the network with the spare as its last unit)."""
     r = {k: np.array(v, dtype=float, copy=True) for k, v in q.items()}
     r["w2"][i] = s - t
     r["w2"][-1] = -t

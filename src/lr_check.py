@@ -1,4 +1,4 @@
-"""Day 0 pre-run check: are the Adam training curves smooth at lr = 0.01?
+"""Pre-run check: are the Adam training curves smooth at lr = 0.01?
 
 Run from the repo's top folder:
     python src/lr_check.py

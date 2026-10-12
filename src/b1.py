@@ -8,8 +8,8 @@ import numpy as np
 from core import flip, permute, path, barrier, lines, sigmoid
 
 ANGLE_T, OFFSET_T = 10.0, 0.25   # H1's same-line test, pre-registered
-W2_RATIO_T = 0.05                # output weight "near zero": below 5% of the largest, Section 2c
-ACT_STD_T = 0.01                 # unit "nearly constant": activation std on training data, Section 2c
+W2_RATIO_T = 0.05                # output weight "near zero": below 5% of the largest (dated rule)
+ACT_STD_T = 0.01                 # unit "nearly constant": activation std on training data (dated rule)
 
 
 # ------------------------------------------------------------ irreducibility checker

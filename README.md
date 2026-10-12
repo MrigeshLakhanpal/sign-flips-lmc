@@ -1,4 +1,4 @@
-# Permutations Are Not Enough: Sign Flips Explain the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks
+# Sign Flips, Not Matching Failure, Account for the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks
 
 **Mrigesh Lakhanpal** · ORCID [0009-0007-9539-9091](https://orcid.org/0009-0007-9539-9091) · Preprint, October 2026
 
@@ -25,8 +25,9 @@ python src/run_b1.py                # optional: exhaustive complete-group search
 ```
 
 `run.sh` / `run.ps1` run all unit tests, training, every analysis, the bootstrap intervals and the figures
-(about 87 minutes on a laptop CPU). A run from a clean copy reproduced `results/barriers.csv` and
-`results/h1b.csv` byte for byte. All randomness is seeded.
+(about 87 minutes on a laptop CPU). A run from a clean copy on the same machine reproduced `results/barriers.csv`
+and `results/h1b.csv` byte for byte; on another platform, loss values may differ in the last digits while every
+error barrier is unchanged. All randomness is seeded. `run.sh` uses `python3` (or `python`); set `PYTHON=` to override.
 
 ## Repository layout
 
@@ -34,9 +35,16 @@ python src/run_b1.py                # optional: exhaustive complete-group search
 |---|---|
 | `src/` | Training, alignment, barrier, analysis and figure code |
 | `tests/` | Unit tests (run first by `run.sh` / `run.ps1`) |
-| `results/` | Result tables (CSV) and report tables |
-| `figures/` | Figures used in the paper |
-| `paper/` | LaTeX source, bibliography and PDF |
+| `results/` | Main run (2% inclusion): barriers, lines, inclusion, H1b, learning-rate check, report tables |
+| `results_inc1/`, `results_inc5/` | Inclusion sensitivity (1% and 5%) |
+| `results_b1/`, `results_b1_inc1/`, `results_b1_inc5/` | Complete-group search (B1) at 2%, 1% and 5% inclusion |
+| `results_wd_all/` | Weight-decay side-check at width 64 (B4; exploratory, inclusion ignored) |
+| `figures/` | All figures written by the scripts |
+| `paper/` | LaTeX source, bibliography, PDF, and a copy of the four figures the paper uses |
+
+Script names: **B1** = complete-group search (`b1.py`, `run_b1.py`), **B2** = spare-neuron figure (`b2_figure.py`),
+**B4** = weight norms and the weight-decay side-check (`b4.py`). `my_core.py` is a hand-written re-implementation
+of three core functions, kept as a check on `core.py`.
 
 ## Data and credit
 
@@ -52,14 +60,15 @@ section states exactly what it did and what I did.
 ## Citation
 
 ```bibtex
-@misc{lakhanpal2026permutations,
+@misc{lakhanpal2026signflips,
   author = {Mrigesh Lakhanpal},
-  title  = {Permutations Are Not Enough: Sign Flips Explain the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks},
+  title  = {Sign Flips, Not Matching Failure, Account for the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks},
   year   = {2026},
-  note   = {Preprint. DOI to be added}
+  note   = {Preprint. DOI to be added},
+  url    = {https://github.com/MrigeshLakhanpal/sign-flips-lmc}
 }
 ```
 
 ## License
 
-Code: MIT (see `LICENSE`). Paper and figures: CC BY 4.0 (see `LICENSE-CC-BY-4.0.md`).
+Code: MIT (see `LICENSE`). Paper, figures and result files: CC BY 4.0 (see `LICENSE-CC-BY-4.0.md`).

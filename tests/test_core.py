@@ -1,4 +1,4 @@
-"""Sanity tests. Run: python -m pytest -q  (or python tests/test_core.py)."""
+"""Sanity tests. Run: python tests/test_core.py"""
 import sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 import numpy as np
@@ -52,7 +52,7 @@ def test_brute_force_finds_true_alignment():
     q = flip(permute(p, [2, 0, 1]), [-1, 1, -1])
     best = brute_force(p, q, X, y, allow_sign=True)
     # the search keeps the function and never does worse than the exact copy
-    # (it can do better: a blend may beat both endpoints, so barriers can be < 0)
+    # (it can do better: a blend may beat both endpoints, so the midpoint can sit below the endpoints)
     assert np.allclose(logits(best, X), logits(p, X))
     from core import midpoint_loss
     assert midpoint_loss(p, best, X, y) <= midpoint_loss(p, p, X, y) + 1e-12

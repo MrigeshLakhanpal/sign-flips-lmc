@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
-title: "Permutations Are Not Enough: Sign Flips Explain the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks"
+title: "Sign Flips, Not Matching Failure, Account for the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks"
 authors:
   - family-names: Lakhanpal
     given-names: Mrigesh
@@ -9,6 +9,7 @@ type: software
 version: "1.0.0"
 date-released: "2026-10-12"
 license: MIT
+repository-code: "https://github.com/MrigeshLakhanpal/sign-flips-lmc"
 keywords:
   - linear mode connectivity
   - permutation symmetry

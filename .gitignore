@@ -10,7 +10,6 @@ paper/*.log
 paper/*.blg
 paper/*.bbl
 paper/*.out
-paper/table*.tex
 lab_coffee_utils.py
 
 # private research notebook (kept off GitHub)

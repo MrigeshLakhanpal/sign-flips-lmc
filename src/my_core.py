@@ -1,4 +1,4 @@
-"""Day 2 exercise: flip, weight_match and barrier written by hand, as a check on core.py.
+"""Practice exercise: flip, weight_match and barrier written by hand, as a check on core.py.
 Not used by the pipeline. Check with:
     python tests/test_my_core.py
 
