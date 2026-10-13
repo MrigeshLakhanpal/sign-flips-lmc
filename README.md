@@ -15,7 +15,7 @@ exhaustive answer possible: for irreducible networks, the complete group of exac
 
 - At width 3, permutation matching leaves a median training-error barrier of **17.95 points**; adding sign flips removes it (**0.00**).
 - An exhaustive search over all 48 exact symmetries leaves at most **0.11 points** in every pair.
-- One spare neuron joins a network to all of its 2^r·r! symmetry copies by a path of exactly constant function (proved).
+- One spare neuron joins a network to all of its 2^r·r! symmetry copies by a path of exactly constant function (proved; its flip step is the constant-plus-odd symmetry of Martinelli et al. 2024, App. A.2.2).
 
 ## Reproduce
 
