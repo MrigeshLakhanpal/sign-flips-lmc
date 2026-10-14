@@ -6,7 +6,7 @@ authors:
     given-names: Mrigesh
     orcid: "https://orcid.org/0009-0007-9539-9091"
 type: software
-version: "1.0.5"
+version: "1.0.6"
 date-released: "2026-10-14"
 license: MIT
 doi: "10.5281/zenodo.23314245"
