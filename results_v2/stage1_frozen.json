@@ -1,0 +1,35 @@
+{
+ "frozen_at": "2026-10-19T03:03:51",
+ "tasks": {
+  "T0": {
+   "file": "models_T0.pkl",
+   "sha256": "49baf88091b002078e55ec1323f481e55b3d3a460ec79d5352e2dd0df9385e78",
+   "hstar": 3,
+   "steps": 3000
+  },
+  "T3": {
+   "file": "models_T3.pkl",
+   "sha256": "647dba5a565bec1748c59e4a8df718cc03ab8425f4ec5142315e7c35332e4892",
+   "hstar": 3,
+   "steps": 3000
+  },
+  "T4": {
+   "file": "models_T4.pkl",
+   "sha256": "1eee781b4ecc8dc48c24422d6541c4ef5b36332134bc7ec423cd115369574c6c",
+   "hstar": 4,
+   "steps": 3000
+  },
+  "T5": {
+   "file": "models_T5.pkl",
+   "sha256": "2ff9ea4bd033ade915cd926193a10f63a0f67d0dc6f71767e6f1a7f5fc2adf04",
+   "hstar": 4,
+   "steps": 3000
+  },
+  "T6": {
+   "file": "models_T6.pkl",
+   "sha256": "d359bc859345d81062b21bf9a2f82ff7d56c30daed73508f12509da6ceab1ec4",
+   "hstar": 4,
+   "steps": 3000
+  }
+ }
+}

@@ -1,0 +1,15 @@
+# Deviations and clarifications of v2_rules.md (commit 349aa3a)
+
+Each entry gives its date and whether it was made before or after seeing any v2 result.
+
+**D1 (19 Oct 2026, before any v2 training). Clarification: data seeds.** Section 2 writes "Train seed 100k + 0, test seed 100k + 1". This means 100·k, so k = 3 uses seeds 300 and 301. (The init seed, written explicitly as 100000·k + 1000·h + s, is unchanged.)
+
+**D2 (19 Oct 2026, before any v2 training). T0 seeds 0–39 are retrained.** Section 7 needs each network's training error at step 2,700, which v1 did not record. Training is full-batch and seeded, so retraining reproduces v1 exactly. `train_v2.py` compares the retrained parameters with v1's `results/models.pkl` and prints whether they are identical. If they differ, this file records it, and v1's networks are used for the first 40 seeds.
+
+**D3 (19 Oct 2026, before any v2 training). Checkpoint after a 10,000-step retrain.** If Section 3.4 is triggered, class (a) compares the training error at step 9,700 with step 10,000, i.e. 300 steps before the end, the same gap as 2,700 vs 3,000.
+
+**D4 (19 Oct 2026, before any v2 training). Exploratory modes in Section 7.** Barriers between excluded and included runs use `none` and `wm_sign`; each excluded run is paired with the first included run in seed order. The all-runs headline uses `none`, `wm`, `wm_sign` and `exact_sign`. Both are labelled exploratory.
+
+**D5 (19 Oct 2026, before any v2 training). Dense grid.** Section 5 item 5 is applied to every mode at h\* (it is cheap), not only to the exact modes.
+
+**D6 (19 Oct 2026, before any v2 training). Faster exact search, same rule.** `exact_search.py` computes each candidate's logit as a sum of per-unit terms. It is tested to give the same curves as the direct computation, and to choose the same alignment as v1's `b1.brute_force_exact` at widths 3 and 4.
