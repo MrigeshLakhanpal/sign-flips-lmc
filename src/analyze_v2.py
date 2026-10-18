@@ -31,7 +31,14 @@ f = d / frozen["file"]
 if hashlib.sha256(f.read_bytes()).hexdigest() != frozen["sha256"]:
     raise SystemExit(f"{f} changed after the Stage 1 freeze; refusing to run (Section 0).")
 hstar = frozen["hstar"]
-out = d / a.task; out.mkdir(parents=True, exist_ok=True)
+out = d / a.task
+if a.max_train_err != 0.02:      # pre-registered inclusion sensitivity (1%, 5%): h* re-derived at that threshold
+    _D = pickle.load(open(f, "rb"))   # from TRAINING ERROR only, same rule as stage1.py (DEVIATIONS.md, D7)
+    hstar = next((h for h in sorted({r["width"] for r in _D["runs"]})
+                  if sum(r["train_err"] <= a.max_train_err for r in _D["runs"] if r["width"] == h) >= 10), None)
+    out = d / f"{a.task}_inc{round(a.max_train_err * 100)}"
+out.mkdir(parents=True, exist_ok=True)
+json.dump({"hstar": hstar, "max_train_err": a.max_train_err}, open(out / "hstar.json", "w"))
 if hstar is None:
     (out / "NO_HSTAR.txt").write_text("No width reached 10 included networks; no barrier analysis (Section 3.4).\n")
     raise SystemExit(f"{a.task}: no h*, nothing to analyze.")

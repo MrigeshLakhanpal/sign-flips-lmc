@@ -13,3 +13,6 @@ Each entry gives its date and whether it was made before or after seeing any v2 
 **D5 (19 Oct 2026, before any v2 training). Dense grid.** Section 5 item 5 is applied to every mode at h\* (it is cheap), not only to the exact modes.
 
 **D6 (19 Oct 2026, before any v2 training). Faster exact search, same rule.** `exact_search.py` computes each candidate's logit as a sum of per-unit terms. It is tested to give the same curves as the direct computation, and to choose the same alignment as v1's `b1.brute_force_exact` at widths 3 and 4.
+
+**D7 (19 Oct 2026, after the Stage 1 freeze, before any barrier was computed). How the inclusion-sensitivity runs pick h\*.** Section 1 pre-registers sensitivity at 1% and 5% inclusion but does not say how h\* is set in those runs. Rule: h\* is re-derived with the same Section 3.3 rule (smallest width with ≥ 10 included networks) at that threshold, from training error only. Results go to `results_v2/<task>_inc1/` and `<task>_inc5/`, and the main analysis stays at 2%.
+*Disclosure:* this was written after seeing the Stage 1 inclusion counts (`stage1.csv`, training error only, which the Section 0 firewall allows). Those counts show h\*(T5) = h\*(T6) = 4 at 2%, but h\* = k for every polygon at 1%. The main verdicts remain the 2% ones.

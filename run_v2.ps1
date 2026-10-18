@@ -19,5 +19,9 @@ python src/stage1.py                               # h*, Section 3.4 check, free
 # python src/analyze_v2.py --task T5 --all-runs
 # python src/analyze_v2.py --task T6 --all-runs
 # python src/hypotheses_v2.py
+# Pre-registered inclusion sensitivity (D7): repeat at 1% and 5%
+# foreach ($t in "T0","T3","T4","T5","T6") { python src/analyze_v2.py --task $t --max-train-err 0.01; python src/analyze_v2.py --task $t --max-train-err 0.05 }
+# python src/hypotheses_v2.py --inc 1
+# python src/hypotheses_v2.py --inc 5
 # python src/dense_grid.py *> results\dense_grid_2pct.txt
 # python src/dense_grid.py --max-train-err 0.05 *> results\dense_grid_5pct.txt
