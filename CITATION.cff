@@ -1,13 +1,13 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
-title: "Sign Flips, Not Matching Failure, Account for the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks"
+title: "A Missing Sign Symmetry Accounts for the Linear-Mode-Connectivity Barrier in Minimal-Width Sigmoid Networks"
 authors:
   - family-names: Lakhanpal
     given-names: Mrigesh
     orcid: "https://orcid.org/0009-0007-9539-9091"
 type: software
-version: "1.0.7"
-date-released: "2026-10-15"
+version: "2.0.0"
+date-released: "2026-10-19"
 license: MIT
 doi: "10.5281/zenodo.23314245"
 identifiers:

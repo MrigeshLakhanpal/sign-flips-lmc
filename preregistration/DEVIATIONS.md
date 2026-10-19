@@ -17,6 +17,16 @@ Each entry gives its date and whether it was made before or after seeing any v2 
 **D7 (19 Oct 2026, after the Stage 1 freeze, before any barrier was computed). How the inclusion-sensitivity runs pick h\*.** Section 1 pre-registers sensitivity at 1% and 5% inclusion but does not say how h\* is set in those runs. Rule: h\* is re-derived with the same Section 3.3 rule (smallest width with ≥ 10 included networks) at that threshold, from training error only. Results go to `results_v2/<task>_inc1/` and `<task>_inc5/`, and the main analysis stays at 2%.
 *Disclosure:* this was written after seeing the Stage 1 inclusion counts (`stage1.csv`, training error only, which the Section 0 firewall allows). Those counts show h\*(T5) = h\*(T6) = 4 at 2%, but h\* = k for every polygon at 1%. The main verdicts remain the 2% ones.
 
-**D8 (19 Oct 2026, after seeing all Stage 2 results). EXPLORATORY H7 on measures without the error ceiling.** The pre-registered H7 (error barrier) failed: ρ = 0.007, CI [−0.18, 0.19]. The flip-free error barrier sits near each task's positive rate, i.e. it saturates at the all-negative classifier. `src/h7_explore.py` repeats the H7 correlation with the raw and calibrated *loss* barriers. This analysis was decided after seeing the results. It is reported as exploratory, and the pre-registered verdict stays "not supported".
+**D8 (19 Oct 2026, after seeing all Stage 2 results). EXPLORATORY H7 on measures without the error ceiling.** The pre-registered H7 (error barrier) failed: ρ = 0.007, CI [−0.18, 0.19]. The flip-free error barrier sits near each task's positive rate, i.e. it saturates at the all-negative classifier. `src/h7_explore.py` repeats the H7 correlation with the raw and calibrated *loss* barriers. This analysis was decided after seeing the results. It is reported as exploratory. The pre-registered rule labels the H7 result "weak" (the interval includes 0); because ρ is indistinguishable from zero, the paper reports it as "not supported", a more conservative wording than the rule requires.
 
 **D9 (19 Oct 2026, after seeing all Stage 2 results). EXPLORATORY: same lines versus remaining barrier.** Split by H1 pass/fail, the exact_sign residual is ≤ 0.21 points in all 157 same-line pairs and 2.4–9.6 points in the 8 different-line pairs (main analysis). The same split appears in the 1% and 5% runs. Reported as exploratory.
+
+**D10 (19 Oct 2026, after an independent pre-release review; no result changed).** The paper text was corrected after five reviewers audited code, numbers, citations, prior work and wording. Changes:
+- prior work by Pittorino et al. (2022) cited, and the novelty claim narrowed;
+- the same-line split stated with its exceptions;
+- the excluded-run classification no longer claims that separate basins are rare;
+- H7 sensitivity results reported (ρ = −0.16 at 1%, −0.21 at 5%);
+- the hexagon's h\* marked as an upper bound;
+- the Table 5 same-line count fixed (unflagged pairs).
+
+No analysis was re-run, and no threshold was changed.
