@@ -41,7 +41,9 @@ powershell -ExecutionPolicy Bypass -File run_v2_stage2.ps1   # Stage 2, sensitiv
 
 Rules: `preregistration/v2_rules.md` (committed before any v2 training) and `preregistration/DEVIATIONS.md` (D1–D9, dated).
 Stage 1 is frozen by SHA-256 fingerprints in `results_v2/stage1_frozen.json`; the analysis refuses to run on changed model files.
-Model files (`results_v2/*.pkl`) are not in git; they are rebuilt by `src/train_v2.py`.
+Model files are in git since v2.1: `results_v2/models_T*.pkl` (the exact files fingerprinted in `results_v2/stage1_frozen.json`) and array-only copies in `results_v2/models_npz/` (`np.load(..., allow_pickle=False)`; written by `src/export_models.py`, which first checks the fingerprints). Loading a `.pkl` file can execute code; use the `.npz` copies if you only need the weights.
+
+**Verify Study 2 without retraining.** Clone the repository, install `requirements.txt`, and run `run_v2_stage2.sh` (or `.ps1`). Stage 2 refuses to run if any model file differs from its committed fingerprint, then rebuilds every file in `results_v2/` (about 2 hours on a laptop CPU). Then run `git status`: on the original machine no committed file changed; on another platform, BLAS differences can change low-order digits.
 
 Timing on a Windows laptop (CPU only): Study 1 `run.ps1` 87 min; Study 2 Stage 1 about 40 min; Stage 2 110 min. A re-run of Stage 2 from the frozen models rebuilt every file in `results_v2/` byte for byte. Full reproduction of both studies takes about 4 hours, plus several hours for the optional `src/run_b1.py`.
 

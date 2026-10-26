@@ -39,8 +39,8 @@ No analysis was re-run, and no threshold was changed.
 - error ceiling stated for every error-barrier magnitude (Section 5.4);
 - rationale for the H2 prediction; fair-coin expectation for the Study 1 flip counts (1.4/4.1/4.1/1.4, computed 12 Oct, post-hoc); reason for the wider calibration grid;
 - limits of Proposition 1 stated inside the proposition;
+- Study 2 model files released (`results_v2/models_T*.pkl`, SHA-256 checked against `stage1_frozen.json` on 26 Oct 2026; array-only copies in `results_v2/models_npz/`);
 - the automated-audit sentence reworded: separate Claude sessions checked code, numbers and citations; these checks are not independent human verification.
 No analysis was re-run for these changes, and no threshold was changed.
 
 **D12 (26 Oct 2026, after all results). POST-HOC: line-tolerance sensitivity of the same-line split (D9).** `src/tolerance_check.py` repeats the D9 split with the H1 tolerance halved (5°, 0.125) and doubled (20°, 0.5). Nothing is retrained or realigned: line matching does not depend on the tolerance, and `pairs.csv` stores each pair's largest angle and offset difference. The pre-registered tolerance reproduces Table 6 (distinct pairs over the three inclusion thresholds: 328/331 same-line pairs and 23/58 different-line pairs below ε). Results (distinct pairs): halved, same lines 290/290 below ε, different lines 61/99; doubled, same lines 342/345, different lines 9/44. Run by Mrigesh on 26 Oct 2026; output in `results_v2/tolerance_check.csv`. Reported as post-hoc.
-

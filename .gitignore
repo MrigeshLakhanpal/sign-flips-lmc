@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 *.pkl
+!results_v2/models_T*.pkl
 .venv/
 venv/
 .vscode/
