@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/1415245694.svg)](https://doi.org/10.5281/zenodo.23314245)
 
-**Mrigesh Lakhanpal** · ORCID [0009-0007-9539-9091](https://orcid.org/0009-0007-9539-9091) · Preprint v2, October 2026
+**Mrigesh Lakhanpal** · ORCID [0009-0007-9539-9091](https://orcid.org/0009-0007-9539-9091) · Preprint v2.1, October 2026
 
 📄 **Paper:** [`paper/Lakhanpal_2026_sign_flips_LMC.pdf`](paper/Lakhanpal_2026_sign_flips_LMC.pdf) · DOI: [10.5281/zenodo.23314245](https://doi.org/10.5281/zenodo.23314245)
 
@@ -14,7 +14,8 @@ For irreducible one-hidden-layer sigmoid networks, the complete group of exact s
 - **v1** (coffee task, width 3, 11 pairs): permutation matching leaves a median training-error barrier of **17.95 points**; with sign flips, **0.00**; an exhaustive search over all 48 symmetries leaves at most **0.11**.
 - **v2** (publicly pre-registered, commit `349aa3a`; sign-aware alignment itself is prior work: Pittorino et al. 2022, Boufalis et al. 2025; 5 tasks, convex polygons with 3–6 edges, 100–120 seeds each, measured minimal widths 3–4): all pre-registered tests of the main claim pass under four barrier measures; the full search leaves an upper-quartile residual of at most **0.13 points** (165 pairs), against 9.95–21.65 points for the best permutation alone.
 - **Learning the same lines suffices** (exploratory): all 157 pairs that learned the same decision lines end at ≤ 0.21 points, while the 8 that learned clearly different lines keep 2.38–9.58. Pairs whose lines differ only slightly can still be nearly connected.
-- **Negative results:** the weights do not predict the size of the *error* barrier (pre-registered H7, ρ = 0.01; the error barrier saturates at the trivial classifier). On *loss* barriers they do, in an exploratory re-test decided afterwards (ρ = 0.86; calibrated 0.65). The claim fails for one task at each sensitivity threshold (1% and 5%).
+- **Negative results:** the weights do not predict the size of the *error* barrier (pre-registered H7, ρ = 0.007; the error barrier saturates at the trivial classifier). On *loss* barriers they do, in an exploratory re-test decided afterwards (ρ = 0.86; calibrated 0.65). The claim fails for one task at each sensitivity threshold (1% and 5%).
+- **v2.1** (26 Oct 2026; no result changed): clarifications after a point-by-point review (D11); a post-hoc check (D12) shows the same-line result holds with the line tolerance halved (290/290 pairs below 0.5 points) or doubled (342/345); Study 2 model files released.
 - ReLU networks have no sign flip; this answers only the sigmoid analogue of the thin-model question.
 
 ## Reproduce
@@ -39,7 +40,7 @@ powershell -ExecutionPolicy Bypass -File run_v2.ps1          # Stage 1: tests, p
 powershell -ExecutionPolicy Bypass -File run_v2_stage2.ps1   # Stage 2, sensitivity, exploratory re-test, tables
 ```
 
-Rules: `preregistration/v2_rules.md` (committed before any v2 training) and `preregistration/DEVIATIONS.md` (D1–D9, dated).
+Rules: `preregistration/v2_rules.md` (committed before any v2 training) and `preregistration/DEVIATIONS.md` (D1–D12, dated).
 Stage 1 is frozen by SHA-256 fingerprints in `results_v2/stage1_frozen.json`; the analysis refuses to run on changed model files.
 Model files are in git since v2.1: `results_v2/models_T*.pkl` (the exact files fingerprinted in `results_v2/stage1_frozen.json`) and array-only copies in `results_v2/models_npz/` (`np.load(..., allow_pickle=False)`; written by `src/export_models.py`, which first checks the fingerprints). Loading a `.pkl` file can execute code; use the `.npz` copies if you only need the weights.
 
@@ -59,7 +60,8 @@ Timing on a Windows laptop (CPU only): Study 1 `run.ps1` 87 min; Study 2 Stage 1
 | `results_wd_all/` | Weight-decay side-check at width 64 (B4; exploratory, inclusion ignored) |
 | `figures/` | All figures written by the scripts |
 | `preregistration/` | v1 rules (from the dated notebook) and v2 rules (committed before the v2 runs), deviations log |
-| `results_v2/` | v2: polygons, Stage 1 counts and freeze, per-task Stage 2 results (`T*/`, `T*_inc1/`, `T*_inc5/`), verdicts |
+| `results_v2/` | v2: polygons, Stage 1 counts and freeze, per-task Stage 2 results (`T*/`, `T*_inc1/`, `T*_inc5/`), verdicts, line-tolerance check (`tolerance_check.csv`, D12) |
+| `results_v2/models_T*.pkl`, `results_v2/models_npz/` | v2 trained models (since v2.1): the fingerprinted files and array-only NumPy copies |
 | `paper/` | LaTeX source, bibliography, PDF, and a copy of the four figures the paper uses |
 
 Script names: **B1** = complete-group search (`b1.py`, `run_b1.py`), **B2** = spare-neuron figure (`b2_figure.py`),

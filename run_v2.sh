@@ -9,7 +9,7 @@ python src/polygons_figure.py                      # polygons BEFORE training (S
 python src/train_v2.py --tasks T0 T3 T4 T5 T6      # Stage 1
 python src/stage1.py                               # h*, Section 3.4 check, freeze file
 # If stage1.py says "Section 3.4" for a task Tk:  python src/train_v2.py --tasks Tk --steps 10000 ; python src/stage1.py
-# Then commit (results_v2/*.pkl stay out of git; their SHA-256 is in the freeze file):
+# Then commit (at the time, results_v2/*.pkl stayed out of git; their SHA-256 is in the freeze file; the files were released in v2.1):
 #   git add src tests preregistration run_v2.ps1 run_v2.sh results_v2/polygons.json results_v2/stage1.csv results_v2/stage1_frozen.json figures/v2_polygons.png
 #   git commit -m "v2 Stage 1 frozen"
 
