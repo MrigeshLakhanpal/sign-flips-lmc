@@ -30,3 +30,17 @@ Each entry gives its date and whether it was made before or after seeing any v2 
 - the Table 5 same-line count fixed (unflagged pairs).
 
 No analysis was re-run, and no threshold was changed.
+
+**D11 (25–26 Oct 2026, after all results; v2.1 text revision, no result changed).** An automated review of the v2 preprint was checked point by point against the paper, the rules, the code and the released PDF. Valid points were addressed in the text; points found to be wrong were not adopted. Changes:
+- abstract: scope stated in the first sentence ("one-hidden-layer sigmoid networks"); the Study 1 complete-group search labelled post-hoc;
+- mode-connectivity citations added (Garipov et al. 2018; Draxler et al. 2018);
+- definition of a flip pair written into Section 5 exactly as in the rules (`exact_sign` flips at least one unit; `n_flips.exact_sign >= 1` in the code), with no condition on barrier size;
+- H5 caveat: under the training-error barrier the ordering is nearly guaranteed by construction, because `exact_sign` minimizes that barrier over a superset of `exact_perm`'s candidates; the informative tests are the other three measures;
+- error ceiling stated for every error-barrier magnitude (Section 5.4);
+- rationale for the H2 prediction; fair-coin expectation for the Study 1 flip counts (1.4/4.1/4.1/1.4, computed 12 Oct, post-hoc); reason for the wider calibration grid;
+- limits of Proposition 1 stated inside the proposition;
+- the automated-audit sentence reworded: separate Claude sessions checked code, numbers and citations; these checks are not independent human verification.
+No analysis was re-run for these changes, and no threshold was changed.
+
+**D12 (26 Oct 2026, after all results). POST-HOC: line-tolerance sensitivity of the same-line split (D9).** `src/tolerance_check.py` repeats the D9 split with the H1 tolerance halved (5°, 0.125) and doubled (20°, 0.5). Nothing is retrained or realigned: line matching does not depend on the tolerance, and `pairs.csv` stores each pair's largest angle and offset difference. The pre-registered tolerance reproduces Table 6 (distinct pairs over the three inclusion thresholds: 328/331 same-line pairs and 23/58 different-line pairs below ε). Results (distinct pairs): halved, same lines 290/290 below ε, different lines 61/99; doubled, same lines 342/345, different lines 9/44. Run by Mrigesh on 26 Oct 2026; output in `results_v2/tolerance_check.csv`. Reported as post-hoc.
+

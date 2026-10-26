@@ -1,0 +1,13 @@
+tolerance,max_angle,max_offset,inclusion,same_pairs,same_below_eps,same_max_points,diff_pairs,diff_below_eps,diff_median_points,distinct_same,distinct_same_below_eps,distinct_diff,distinct_diff_below_eps
+halved,5.0,0.125,2%,154.0,154.0,0.17,11.0,3.0,3.47,,,,
+halved,5.0,0.125,1%,120.0,120.0,0.17,30.0,23.0,0.09,,,,
+halved,5.0,0.125,5%,165.0,165.0,0.42,62.0,36.0,0.36,,,,
+halved,5.0,0.125,distinct,,,,,,,290.0,290.0,99.0,61.0
+pre-registered,10.0,0.25,2%,157.0,157.0,0.21,8.0,0.0,3.74,,,,
+pre-registered,10.0,0.25,1%,135.0,135.0,0.2,15.0,8.0,0.17,,,,
+pre-registered,10.0,0.25,5%,189.0,186.0,0.74,38.0,15.0,1.06,,,,
+pre-registered,10.0,0.25,distinct,,,,,,,331.0,328.0,58.0,23.0
+doubled,20.0,0.5,2%,157.0,157.0,0.21,8.0,0.0,3.74,,,,
+doubled,20.0,0.5,1%,142.0,142.0,0.2,8.0,1.0,3.38,,,,
+doubled,20.0,0.5,5%,196.0,193.0,0.74,31.0,8.0,1.41,,,,
+doubled,20.0,0.5,distinct,,,,,,,345.0,342.0,44.0,9.0
