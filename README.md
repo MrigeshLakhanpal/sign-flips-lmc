@@ -2,9 +2,9 @@
 
 [![DOI](https://zenodo.org/badge/1415245694.svg)](https://doi.org/10.5281/zenodo.23314245)
 
-**Mrigesh Lakhanpal** · ORCID [0009-0007-9539-9091](https://orcid.org/0009-0007-9539-9091) · Preprint v2.1, October 2026
+**Mrigesh Lakhanpal** · ORCID [0009-0007-9539-9091](https://orcid.org/0009-0007-9539-9091) · Preprint v2.1.2, October 2026
 
-📄 **Paper:** [`paper/Lakhanpal_2026_sign_flips_LMC.pdf`](paper/Lakhanpal_2026_sign_flips_LMC.pdf) · DOI: [10.5281/zenodo.23314245](https://doi.org/10.5281/zenodo.23314245)
+**Paper:** [`paper/Lakhanpal_2026_sign_flips_LMC.pdf`](paper/Lakhanpal_2026_sign_flips_LMC.pdf) · DOI: [10.5281/zenodo.23314245](https://doi.org/10.5281/zenodo.23314245)
 
 ## Summary
 
@@ -15,7 +15,8 @@ For irreducible one-hidden-layer sigmoid networks, the complete group of exact s
 - **v2** (publicly pre-registered, commit `349aa3a`; sign-aware alignment itself is prior work: Pittorino et al. 2022, Boufalis et al. 2025; 5 tasks, convex polygons with 3–6 edges, 100–120 seeds each, measured minimal widths 3–4): all pre-registered tests of the main claim pass under four barrier measures; the full search leaves an upper-quartile residual of at most **0.13 points** (165 pairs), against 9.95–21.65 points for the best permutation alone.
 - **Learning the same lines suffices** (exploratory): all 157 pairs that learned the same decision lines end at ≤ 0.21 points, while the 8 that learned clearly different lines keep 2.38–9.58. Pairs whose lines differ only slightly can still be nearly connected.
 - **Negative results:** the weights do not predict the size of the *error* barrier (pre-registered H7, ρ = 0.007; the error barrier saturates at the trivial classifier). On *loss* barriers they do, in an exploratory re-test decided afterwards (ρ = 0.86; calibrated 0.65). The claim fails for one task at each sensitivity threshold (1% and 5%).
-- **v2.1** (26 Oct 2026; no result changed): clarifications after a point-by-point review (D11); a post-hoc check (D12) shows the same-line result holds with the line tolerance halved (290/290 pairs below 0.5 points) or doubled (342/345); Study 2 model files released.
+- **v2.1** (26 Oct 2026; text only, no result changed): text clarifications (D11); post-hoc line-tolerance check (D12): the same-line result holds with the tolerance halved (290/290 pairs below 0.5 points) or doubled (342/345); Study 2 model files released.
+- **v2.1.2** (30 Oct 2026; text only, no result changed): post-hoc checks of the verdicts (D13). Pairs within ε with one-sided 95% Clopper–Pearson lower bounds: four tasks ≥ 0.82; hexagon 23/29 (0.63), which is not statistically secure; all 157 same-line pairs pass (0.98). No H4a verdict changes for ε between 0.23 and 2.57 points. `wm_sign`, which never evaluates a barrier, gives the same pass counts as `exact_sign`. Citation pinpoints corrected.
 - ReLU networks have no sign flip; this answers only the sigmoid analogue of the thin-model question.
 
 ## Reproduce
@@ -40,7 +41,7 @@ powershell -ExecutionPolicy Bypass -File run_v2.ps1          # Stage 1: tests, p
 powershell -ExecutionPolicy Bypass -File run_v2_stage2.ps1   # Stage 2, sensitivity, exploratory re-test, tables
 ```
 
-Rules: `preregistration/v2_rules.md` (committed before any v2 training) and `preregistration/DEVIATIONS.md` (D1–D12, dated).
+Rules: `preregistration/v2_rules.md` (committed before any v2 training) and `preregistration/DEVIATIONS.md` (D1–D13, dated).
 Stage 1 is frozen by SHA-256 fingerprints in `results_v2/stage1_frozen.json`; the analysis refuses to run on changed model files.
 Model files are in git since v2.1: `results_v2/models_T*.pkl` (the exact files fingerprinted in `results_v2/stage1_frozen.json`) and array-only copies in `results_v2/models_npz/` (`np.load(..., allow_pickle=False)`; written by `src/export_models.py`, which first checks the fingerprints). Loading a `.pkl` file can execute code; use the `.npz` copies if you only need the weights.
 
@@ -76,8 +77,8 @@ files are included in this repository.**
 
 ## Use of AI assistance
 
-I used Claude (Anthropic) as an AI research and coding assistant. The paper's *Authorship and use of AI assistance*
-section states exactly what it did and what I did.
+Claude (Anthropic) was used as a research, coding and writing assistant under my direction; I reviewed, tested and
+approved all of its output. See the paper's *Authorship and use of AI assistance* section.
 
 ## Citation
 
