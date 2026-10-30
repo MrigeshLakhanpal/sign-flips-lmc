@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/1415245694.svg)](https://doi.org/10.5281/zenodo.23314245)
 
-**Mrigesh Lakhanpal** · ORCID [0009-0007-9539-9091](https://orcid.org/0009-0007-9539-9091) · Preprint v2.1.2, October 2026
+**Mrigesh Lakhanpal** · ORCID [0009-0007-9539-9091](https://orcid.org/0009-0007-9539-9091) · Preprint v2.1.3, October 2026
 
 **Paper:** [`paper/Lakhanpal_2026_sign_flips_LMC.pdf`](paper/Lakhanpal_2026_sign_flips_LMC.pdf) · DOI: [10.5281/zenodo.23314245](https://doi.org/10.5281/zenodo.23314245)
 
